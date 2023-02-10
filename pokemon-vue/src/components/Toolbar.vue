@@ -12,8 +12,6 @@
     <v-spacer></v-spacer>
 
     <v-toolbar-items>
-      <v-btn variant="text" to="/lista">Lista</v-btn>
-
       <v-divider vertical></v-divider>
 
       <v-btn variant="text" href="https://pokeapi.co/">API</v-btn>

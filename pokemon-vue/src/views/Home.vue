@@ -19,10 +19,19 @@
         <v-card class="mx-auto" max-width="250" variant="elevated" color="#FAFAFA" :to="{name: 'pokemon-info', params: {name: this.pokemon_1[0].name}}">
           <v-card-item class="d-flex justify-center">
             <div>
-              <div class="text-overline mb-1">
-                <img :src="this.pokemon_1[0].sprites.front_default" alt="pokemon-logo" style="height: 100px;">
-              </div>
-              <div class="text-uppercase font-weight-bold mb-1 text-center">
+              <v-row class="text-overline mb-1">
+                <div class="ma-2">
+                  <img :src="this.pokemon_1[0].sprites.front_default" alt="pokemon-logo" style="height: 100px;">
+                  <div class="text-center">Normal</div>
+                </div>
+                <v-divider vertical></v-divider>
+                <div class="ma-2">
+                  <img :src="this.pokemon_1[0].sprites.front_shiny" alt="pokemon-logo" style="height: 100px;">
+                  <div class="text-center">Shiny</div>
+                </div>
+              </v-row>
+              <v-divider class="my-4"></v-divider>
+              <div class="text-uppercase font-weight-bold my-3 text-center">
                 <div> {{ this.pokemon_1[0].name }}</div>
               </div>
             </div>
@@ -39,9 +48,18 @@
               <v-card class="mx-auto" min-width="250" variant="elevated" color="#FAFAFA" :to="{name: 'pokemon-info', params: {name: pokemon.name}}">
                 <v-card-item class="d-flex justify-center">
                   <div>
-                    <div class="text-overline mb-1">
-                      <img :src="pokemon.sprites.front_default" alt="pokemon-logo" style="height: 100px;">
-                    </div>
+                    <v-row class="text-overline mb-1">
+                      <div class="ma-2">
+                        <img :src="pokemon.sprites.front_default" alt="pokemon-logo" style="height: 100px;">
+                        <div class="text-center">Normal</div>
+                      </div>
+                      <v-divider vertical></v-divider>
+                      <div class="ma-2">
+                        <img :src="pokemon.sprites.front_shiny" alt="pokemon-logo" style="height: 100px;">
+                        <div class="text-center">Shiny</div>
+                      </div>
+                    </v-row>
+                    <v-divider class="my-4"></v-divider>
                     <div class="text-uppercase font-weight-bold mb-1 text-center">
                       <div>{{ pokemon.name }}</div>
                     </div>
@@ -60,15 +78,54 @@
           <v-card class="mx-auto" max-width="250" variant="elevated" color="#FAFAFA" :to="{name: 'pokemon-info', params: {name: this.pokemon_3[0].name}}">
             <v-card-item class="d-flex justify-center">
               <div>
-                <div class="text-overline mb-1">
-                  <img :src="this.pokemon_3[0].sprites.front_default" alt="pokemon-logo" style="height: 100px;">
-                </div>
+                <v-row class="text-overline mb-1">
+                  <div class="ma-2">
+                    <img :src="this.pokemon_3[0].sprites.front_default" alt="pokemon-logo" style="height: 100px;">
+                    <div class="text-center">Normal</div>
+                  </div>
+                  <v-divider vertical></v-divider>
+                  <div class="ma-2">
+                    <img :src="this.pokemon_3[0].sprites.front_shiny" alt="pokemon-logo" style="height: 100px;">
+                    <div class="text-center">Shiny</div>
+                  </div>
+                </v-row>
+                <v-divider class="my-4"></v-divider>
                 <div class="text-uppercase font-weight-bold mb-1 text-center">
                   <div> {{ this.pokemon_3[0].name }}</div>
                 </div>
               </div>
             </v-card-item>
           </v-card>
+        </div>
+        <div v-if="this.varieties.length > 1">
+          <div class="text-uppercase font-weight-bold mt-8 text-center">
+            Variedades
+          </div>
+          <v-row class="justify-center">
+            <div class="ma-8" v-for="pokemon in this.varieties">
+              <v-card class="mx-auto" min-width="250" variant="elevated" color="#FAFAFA" :to="{name: 'pokemon-info', params: {name: pokemon.name}}">
+                <v-card-item class="d-flex justify-center">
+                  <div>
+                    <v-row class="text-overline mb-1">
+                      <div class="ma-2">
+                        <img :src="pokemon.sprites.front_default" alt="pokemon-logo" style="height: 100px;">
+                        <div class="text-center">Normal</div>
+                      </div>
+                      <v-divider vertical></v-divider>
+                      <div class="ma-2">
+                        <img :src="pokemon.sprites.front_shiny" alt="pokemon-logo" style="height: 100px;">
+                        <div class="text-center">Shiny</div>
+                      </div>
+                    </v-row>
+                    <v-divider class="my-4"></v-divider>
+                    <div class="text-uppercase font-weight-bold mb-1 text-center">
+                      <div>{{ pokemon.name }}</div>
+                    </div>
+                  </div>
+                </v-card-item>
+              </v-card>
+            </div>
+          </v-row>
         </div>
       </div>
     </v-container>
@@ -94,7 +151,8 @@ export default {
       pokemon_1: [],
       pokemon_2: [],
       pokemon_3: [],
-      pokemon_species: '',
+      pokemon_species: [],
+      varieties: []
     }
   },
   methods: {
@@ -115,6 +173,8 @@ export default {
             this.pokemon_2.push(response.data);
           } else if (arrayType == 3) {
             this.pokemon_3.push(response.data);
+          } else if (arrayType == 4) {
+            this.varieties.push(response.data);
           }
         })
     },
@@ -126,7 +186,18 @@ export default {
         })
         .catch(function (error) {
           alert("Não foi possível encontrar esse pokemon");
-        });;
+        });
+    },
+    getVarieties(name) {
+      axios.get('https://pokeapi.co/api/v2/pokemon-species/' + name)
+          .then(response => {
+            response.data.varieties.forEach(element => {
+              this.getPokemon(element.pokemon.name, 4);
+            });
+          })
+          .catch(function (error) {
+            alert("Não foi possível encontrar esse pokemon");
+          });
     },
     getEvolution(url) {
       axios.get(url)
@@ -137,6 +208,7 @@ export default {
               this.getPokemon(element.species.name, 2);
               if (element.evolves_to.length) {
                 this.getPokemon(element.evolves_to[0].species.name, 3);
+                this.getVarieties(element.evolves_to[0].species.name);
               }
             });
           }
@@ -146,7 +218,8 @@ export default {
       this.pokemon_1 = [];
       this.pokemon_2 = [];
       this.pokemon_3 = [];
-      this.pokemon_species = '';
+      this.pokemon_species = [];
+      this.varieties = [];
     }
   },
 }
